@@ -1,0 +1,15 @@
+{
+  "name": "vigilans-agents",
+  "description": "Vigilans' agent skills, plugins, and definitions",
+  "owner": {
+    "name": "Vigilans"
+  },
+  "plugins": [
+    {
+      "name": "subagent-model",
+      "description": "Override subagent models via environment variables",
+      "source": "./plugins/subagent-model",
+      "category": "hooks"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "subagent-model",
+  "version": "0.1.0",
+  "description": "Override subagent models via environment variables (CLAUDE_CODE_SUBAGENT_<TYPE>_MODEL)",
+  "author": {
+    "name": "Vigilans"
+  },
+  "repository": "https://github.com/Vigilans/agents.git",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "subagent",
+    "model",
+    "hook"
+  ]
+}
