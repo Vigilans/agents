@@ -10,6 +10,12 @@
       "description": "Override subagent models via environment variables",
       "source": "./plugins/subagent-model",
       "category": "hooks"
+    },
+    {
+      "name": "osc-notify",
+      "description": "Forward Claude Code hook events as OSC desktop notifications",
+      "source": "./plugins/osc-notify",
+      "category": "hooks"
     }
   ]
 }

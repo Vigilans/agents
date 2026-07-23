@@ -1,0 +1,16 @@
+{
+  "name": "osc-notify",
+  "version": "0.1.0",
+  "description": "Forward Claude Code hook events as OSC desktop notifications",
+  "author": {
+    "name": "Vigilans"
+  },
+  "repository": "https://github.com/Vigilans/agents.git",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "notification",
+    "osc",
+    "hook"
+  ]
+}
