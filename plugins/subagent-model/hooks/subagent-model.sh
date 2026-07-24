@@ -5,6 +5,17 @@
 #   CLAUDE_CODE_SUBAGENT_<TYPE>_MODEL
 #   - subagent_type is uppercased and hyphens become underscores
 #   - missing subagent_type maps to GENERAL_PURPOSE
+#
+#   CLAUDE_CODE_SUBAGENT_<ALIAS>_MODEL
+#   - applies whenever the effective model matches <ALIAS>, whether the model
+#     was chosen explicitly or inherited
+#
+#   CLAUDE_CODE_SUBAGENT_INHERIT_MODEL / CLAUDE_CODE_SUBAGENT_INHERIT_<ALIAS>_MODEL
+#   - same, but only when the call picks no model (unset, "inherit", or
+#     "default"); the effective model is the one that made the Agent call,
+#     read from the transcript
+#
+#   First match wins: <TYPE> > INHERIT_<ALIAS> > INHERIT > <ALIAS>
 #   - CLAUDE_CODE_SUBAGENT_MODEL remains Claude Code's native global override
 #   - custom model IDs are only injected when the active runtime does not
 #     contain Agent updatedInput schema validation
@@ -51,15 +62,92 @@ supports_updated_input_without_schema_validation() {
     [ "${status:-0}" -eq 1 ]
 }
 
+agent_calling_model() {
+    local transcript="$1"
+    [ -r "$transcript" ] || return 0
+
+    # Poll for a main-thread assistant message to appear
+    local deadline=$((SECONDS + 2))
+    local model=""
+    while [ $SECONDS -lt $deadline ]; do
+        model=$(tail -200 "$transcript" 2>/dev/null | jq -rs '
+            last(.[] | select(.isSidechain == false and .type == "assistant")
+                | .message.model // empty) // empty' 2>/dev/null || true)
+        [ -n "$model" ] && break
+        sleep 0.05
+    done
+    printf '%s' "$model" # Model of the LLM response that made this Agent call.
+}
+
+model_id_to_alias() {
+    local model="$1" key val base cfg
+    [ -n "$model" ] && [ "$model" != "default" ] || return 0
+
+    base="${model%%\[*}"
+    while IFS='=' read -r key val; do
+        case "$key" in
+            ANTHROPIC_DEFAULT_*_MODEL)
+                cfg="${val%%\[*}"
+                if [ -n "$cfg" ]; then
+                    case "$cfg" in *"$base"*|"$base"*)
+                        printf '%s\n' "${key#ANTHROPIC_DEFAULT_}" | sed 's/_MODEL$//'
+                        return 0 ;;
+                    esac
+                    case "$base" in *"$cfg"*)
+                        printf '%s\n' "${key#ANTHROPIC_DEFAULT_}" | sed 's/_MODEL$//'
+                        return 0 ;;
+                    esac
+                fi
+                ;;
+        esac
+    done < <(env)
+
+    case "${base,,}" in
+        *opus*)   echo OPUS ;;
+        *sonnet*) echo SONNET ;;
+        *haiku*)  echo HAIKU ;;
+        *fable*)  echo FABLE ;;
+        *) tr '[:lower:]-.' '[:upper:]__' <<<"$base" ;;
+    esac
+}
+
 case "$EVENT" in
 PreToolUse)
     SUBAGENT_TYPE=$(jq -r '.tool_input.subagent_type // "general-purpose"' <<<"$INPUT")
     UPPER_NAME=$(tr '[:lower:]-' '[:upper:]_' <<<"$SUBAGENT_TYPE")
     MODEL=""
-    if [[ "$UPPER_NAME" =~ ^[A-Z_][A-Z0-9_]*$ ]]; then
+    if [[ "$UPPER_NAME" =~ ^[A-Z_][A-Z0-9_]*$ ]]; then # CLAUDE_CODE_SUBAGENT_<TYPE>_MODEL
         MODEL_VAR="CLAUDE_CODE_SUBAGENT_${UPPER_NAME}_MODEL"
         MODEL="${!MODEL_VAR:-}"
     fi
+
+    if [ -z "$MODEL" ]; then # CLAUDE_CODE_SUBAGENT_<ALIAS>_MODEL
+        REQUESTED=$(jq -r '.tool_input.model // empty' <<<"$INPUT")
+        case "$REQUESTED" in
+            ""|inherit|default)
+                # Inherit-like calls (unset, "inherit", "default") resolve through the inherited model's alias
+                EFFECTIVE=$(agent_calling_model \
+                    "$(jq -r '.transcript_path // empty' <<<"$INPUT")")
+                ALIAS=$(model_id_to_alias "$EFFECTIVE")
+                if [ -n "$ALIAS" ]; then
+                    MODEL_VAR="CLAUDE_CODE_SUBAGENT_INHERIT_${ALIAS}_MODEL"
+                    MODEL="${!MODEL_VAR:-}"
+                fi
+                if [ -z "$MODEL" ]; then
+                    MODEL="${CLAUDE_CODE_SUBAGENT_INHERIT_MODEL:-}"
+                fi
+                ;;
+            *)
+                # Explicit model choices are matched against <ALIAS> directly.
+                ALIAS=$(model_id_to_alias "$REQUESTED")
+                ;;
+        esac
+        if [ -z "$MODEL" ] && [ -n "$ALIAS" ]; then
+            MODEL_VAR="CLAUDE_CODE_SUBAGENT_${ALIAS}_MODEL"
+            MODEL="${!MODEL_VAR:-}"
+        fi
+    fi
+
     if [ -n "$MODEL" ] \
         && ! supports_updated_input_without_schema_validation; then
         MODEL=""

@@ -1,7 +1,7 @@
 {
   "name": "subagent-model",
-  "version": "0.1.0",
-  "description": "Override subagent models via environment variables (CLAUDE_CODE_SUBAGENT_<TYPE>_MODEL)",
+  "version": "0.2.0",
+  "description": "Override subagent models and permission modes via environment variables (CLAUDE_CODE_SUBAGENT_<TYPE|ALIAS>_MODEL, CLAUDE_CODE_SUBAGENT_INHERIT_<ALIAS>_MODEL, CLAUDE_CODE_SUBAGENT_MODE)",
   "author": {
     "name": "Vigilans"
   },
