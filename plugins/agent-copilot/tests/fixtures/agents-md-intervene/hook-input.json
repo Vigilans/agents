@@ -1,0 +1,13 @@
+{
+  "session_id": "fixture-agents-md-intervene",
+  "transcript_path": "./transcript.jsonl",
+  "cwd": "./project-cwd",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Edit",
+  "tool_input": {
+    "file_path": "migrations/0007_add_last_login_at.sql",
+    "old_string": "ALTER TABLE users ADD COLUMN last_login_at TIMESTAMP;",
+    "new_string": "ALTER TABLE users ADD COLUMN last_login_at TIMESTAMPTZ;"
+  },
+  "tool_use_id": "toolu_fixture_amd_intervene"
+}

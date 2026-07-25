@@ -1,0 +1,10 @@
+{
+  "session_id": "fixture-permission-wrapper-stripped",
+  "cwd": "./project-cwd",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "LANG=C timeout 10 wc -l src/index.js"
+  },
+  "tool_use_id": "toolu_fixture_perm_wrapper"
+}

@@ -1,0 +1,8 @@
+# Scenario fixtures carry real transcripts and CLAUDE.md snapshots — private by
+# default. The tracked ones are the synthetic per-check samples, opted in by name.
+tests/fixtures/*
+!tests/fixtures/agents-md-*/
+!tests/fixtures/auto-mode-*/
+!tests/fixtures/permission-*/
+!tests/fixtures/skill-suggest-*/
+!tests/fixtures/tool-call-guard-*/

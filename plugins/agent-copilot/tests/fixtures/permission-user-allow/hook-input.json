@@ -1,0 +1,10 @@
+{
+  "session_id": "fixture-permission-user-allow",
+  "cwd": "./project-cwd",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "fixturemarker --report build"
+  },
+  "tool_use_id": "toolu_fixture_perm_user_allow"
+}

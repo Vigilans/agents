@@ -1,0 +1,7 @@
+{
+  "session_id": "fixture-skill-suggest-clear",
+  "transcript_path": "./transcript.jsonl",
+  "cwd": "./project-cwd",
+  "hook_event_name": "UserPromptSubmit",
+  "prompt": "上一个 commit 的 message 写错了个单词，怎么改？"
+}

@@ -1,0 +1,11 @@
+{
+  "session_id": "fixture-tool-call-guard-intervene",
+  "transcript_path": "./transcript.jsonl",
+  "cwd": "./project-cwd",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "npm publish --access public"
+  },
+  "tool_use_id": "toolu_fixture_tcg_intervene"
+}

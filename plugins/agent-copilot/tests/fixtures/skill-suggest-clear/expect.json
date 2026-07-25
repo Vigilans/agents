@@ -1,0 +1,6 @@
+{
+  "outcome": {
+    "intervenes": false,
+    "mustNotContain": ["release-notes", "db-migration", "perf-profile"]
+  }
+}

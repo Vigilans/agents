@@ -1,0 +1,7 @@
+{
+  "session_id": "fixture-auto-mode-clear",
+  "transcript_path": "./transcript.jsonl",
+  "cwd": "./project-cwd",
+  "hook_event_name": "Stop",
+  "stop_hook_active": false
+}

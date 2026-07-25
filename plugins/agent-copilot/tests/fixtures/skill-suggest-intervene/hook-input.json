@@ -1,0 +1,7 @@
+{
+  "session_id": "fixture-skill-suggest-intervene",
+  "transcript_path": "./transcript.jsonl",
+  "cwd": "./project-cwd",
+  "hook_event_name": "UserPromptSubmit",
+  "prompt": "给 orders 表加一个 refunded_at 字段，帮我写这个 schema 迁移"
+}

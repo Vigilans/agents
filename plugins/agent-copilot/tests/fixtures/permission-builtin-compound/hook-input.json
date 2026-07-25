@@ -1,0 +1,10 @@
+{
+  "session_id": "fixture-permission-builtin-compound",
+  "cwd": "./project-cwd",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "cat README.md | grep install | head -5"
+  },
+  "tool_use_id": "toolu_fixture_perm_builtin_compound"
+}
