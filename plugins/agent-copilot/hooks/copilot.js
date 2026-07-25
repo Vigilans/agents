@@ -231,15 +231,14 @@ function readProjectMemoryIndex(cwd) {
 }
 
 export function renderClaudeMdContext(cwd) {
-  // AGENT_COPILOT_CLAUDE_MD_ROOT overrides the root (test fixtures pin a stable
-  // CLAUDE.md tree so scenario output doesn't drift with the live files).
-  // Claude Code reads CLAUDE.md from the directory root, falling back to its
-  // .claude/ subdirectory — the first that exists wins, they are not merged.
-  const userRoot = resolveEnv('AGENT_COPILOT_CLAUDE_MD_ROOT') ?? homedir();
-  const pickCm = (root) =>
-    [resolve(root, 'CLAUDE.md'), resolve(root, '.claude', 'CLAUDE.md')].find((p) => existsSync(p));
-  const userCm = pickCm(userRoot);
-  const projectCm = pickCm(cwd);
+  // AGENT_COPILOT_CLAUDE_USER_ROOT overrides ~/.claude (test fixtures pin a
+  // stable tree so scenario output doesn't drift with the live files).
+  const userRoot = process.env.AGENT_COPILOT_CLAUDE_USER_ROOT || resolve(homedir(), '.claude');
+  const userCmPath = resolve(userRoot, 'CLAUDE.md');
+  const userCm = existsSync(userCmPath) ? userCmPath : undefined;
+  // A project keeps CLAUDE.md either at its root or under .claude/ — the first
+  // that exists wins, they are not merged.
+  const projectCm = [resolve(cwd, 'CLAUDE.md'), resolve(cwd, '.claude', 'CLAUDE.md')].find((p) => existsSync(p));
 
   const userFiles = userCm ? resolveClaudeMd(userCm, "user's private global instructions for all projects") : [];
   const projectFiles = projectCm ? resolveClaudeMd(projectCm, 'project instructions, checked into the codebase') : [];
