@@ -694,6 +694,9 @@ export async function loadEvents() {
     if (mod.postProcessHookOutput !== undefined && typeof mod.postProcessHookOutput !== 'function') {
       throw new Error(`${path}: postProcessHookOutput must be a function when present`);
     }
+    if (mod.preprocessHookInput !== undefined && typeof mod.preprocessHookInput !== 'function') {
+      throw new Error(`${path}: preprocessHookInput must be a function when present`);
+    }
     if (map.has(mod.hookEventName)) {
       throw new Error(`${path}: duplicate hookEventName '${mod.hookEventName}'`);
     }
@@ -1252,6 +1255,15 @@ export async function runPipeline(hookInput, agentName = 'copilot', diagnostics 
   const events = await loadEvents();
   const checks = await loadChecks(new Set(events.keys()));
   const system = loadAgentSystemPrompt(agentName);
+
+  // Early short-circuit: an event module may settle the hook from the hook
+  // input alone, before the transcript is loaded. A returned object is the
+  // final hook stdout; undefined continues the full pipeline.
+  const earlyEventModule = events.get(hookInput.hook_event_name);
+  if (earlyEventModule?.preprocessHookInput) {
+    const early = earlyEventModule.preprocessHookInput(hookInput);
+    if (early !== undefined) return early;
+  }
 
   let transcript = loadTranscript(hookInput.transcript_path);
   let ctx = buildCtx(hookInput, transcript, cwd);

@@ -1,5 +1,7 @@
 export const hookEventName = 'PreToolUse';
 
+import { isPreApproved } from '../lib/permission-rule.mjs';
+
 export const hookInputSchema = {
   type: 'object',
   properties: {
@@ -20,7 +22,7 @@ export const hookOutputSchema = {
       type: 'object',
       properties: {
         hookEventName: { const: 'PreToolUse' },
-        permissionDecision: { enum: ['allow', 'ask', 'deny'] },
+        permissionDecision: { enum: ['allow', 'ask', 'deny', 'defer'] },
         permissionDecisionReason: { type: 'string' },
         additionalContext: { type: 'string' },
       },
@@ -110,6 +112,19 @@ ${check.getStage2Prompt(ctx)}`);
 
 ${sections.join('\n\n')}`
   );
+}
+
+export function preprocessHookInput(hookInput) {
+  const cwd = hookInput.cwd ?? process.cwd();
+  // Defer what Claude Code's own permission rules already cover — its verdict costs nothing, a copilot round-trip costs seconds.
+  if (isPreApproved(hookInput.tool_name, hookInput.tool_input ?? {}, cwd)) {
+    return {
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'defer',
+      },
+    };
+  }
 }
 
 // Mark a deny with an attribution prefix so the agent (and future copilot
