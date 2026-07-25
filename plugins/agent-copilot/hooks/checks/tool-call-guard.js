@@ -1,38 +1,7 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { homedir } from 'node:os';
-import { resolve } from 'node:path';
+import { loadPermissionSources } from '../lib/settings.mjs';
 
 export const name = 'tool-call-guard';
 export const hookEvents = ['PreToolUse'];
-
-function readPermissions(path) {
-  if (!existsSync(path)) return null;
-  try {
-    const parsed = JSON.parse(readFileSync(path, 'utf8'));
-    if (!parsed.permissions) return null;
-    return {
-      source: path,
-      allow: parsed.permissions.allow,
-      ask: parsed.permissions.ask,
-      deny: parsed.permissions.deny,
-    };
-  } catch {
-    return null;
-  }
-}
-
-function loadPermissionSources(cwd) {
-  const sources = [];
-  for (const path of [
-    resolve(homedir(), '.claude', 'settings.json'),
-    resolve(cwd, '.claude', 'settings.json'),
-    resolve(cwd, '.claude', 'settings.local.json'),
-  ]) {
-    const permissions = readPermissions(path);
-    if (permissions !== null) sources.push(permissions);
-  }
-  return sources;
-}
 
 function formatList(value) {
   return Array.isArray(value) && value.length > 0 ? value.map(v => `    - ${v}`).join('\n') : '    (none)';
@@ -42,15 +11,15 @@ function formatPermissionSources(sources) {
   if (sources.length === 0) return '(no permission settings found)';
 
   const sections = [];
-  for (const source of sources) {
+  for (const { path, permissions } of sources) {
     sections.push(
-`- Source: ${source.source}
+`- Source: ${path}
   allow:
-${formatList(source.allow)}
+${formatList(permissions.allow)}
   ask:
-${formatList(source.ask)}
+${formatList(permissions.ask)}
   deny:
-${formatList(source.deny)}`);
+${formatList(permissions.deny)}`);
   }
   return sections.join('\n\n');
 }
