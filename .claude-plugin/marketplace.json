@@ -16,6 +16,12 @@
       "description": "Forward Claude Code hook events as OSC desktop notifications",
       "source": "./plugins/osc-notify",
       "category": "hooks"
+    },
+    {
+      "name": "agent-copilot",
+      "description": "A copilot for the main Claude Code agent across hook events",
+      "source": "./plugins/agent-copilot",
+      "category": "hooks"
     }
   ]
 }

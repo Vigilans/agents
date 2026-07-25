@@ -1,0 +1,16 @@
+{
+  "name": "agent-copilot",
+  "version": "0.1.0",
+  "description": "A copilot for the main Claude Code agent across hook events",
+  "author": {
+    "name": "Vigilans"
+  },
+  "repository": "https://github.com/Vigilans/agents.git",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "agent",
+    "copilot",
+    "hook"
+  ]
+}
