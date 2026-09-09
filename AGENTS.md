@@ -29,7 +29,7 @@ When choosing an approach:
 When working within a stated or existing design:
 
 - Respect the user's stated design or solution shape. Do not replace the user's explicit choice with your preferred simplification or redesign unless you first explain the tradeoff and the user approves; keep broader redesigns in follow-up options, not in the current change.
-- Prefer existing concepts over new machinery. Reuse current interfaces, data shapes, names, and lifecycle; new fields, helpers, state keys, protocols, or architectural concepts must be presented as proposals before use.
+- Prefer existing concepts over new machinery. Reuse current interfaces, data shapes, names, and lifecycle. Before proposing new fields, helpers, state keys, protocols, or architectural concepts, inspect surrounding code for existing solutions and conventions. Check whether the addition is necessary and follows existing naming, placement, scope, and state ownership patterns. Revise or discard unsuitable additions before presenting them for approval; obtain approval before use.
 
 When tests are involved:
 
@@ -53,6 +53,7 @@ When your changes create orphans:
 
 When editing long-lived text, including instructions, skills, memories, docs, and code comments:
 
+- Before writing, identify the intended readers, where they will encounter the text, and what it should help them understand or do. Include only information relevant to that purpose. Review the result using the knowledge and context available to those readers, without relying on this conversation.
 - Prevent stale-concept pollution: state the current model, invariant, or decision directly. Strip edit history, rejected alternatives, discarded mechanisms from the target text.
 - Removed concepts are removed, not negated. The final text should not preserve them as "not X", "doesn't use X", "rather than X", caveats or comparison tails.
 - Keep rationale/history only when it answers a likely reader question about an existing concept, or records a tempting attempted path with evidence.
@@ -108,20 +109,15 @@ During execution:
 
 For investigations:
 
-- Investigations (tracing call chains, understanding architecture, reading large amounts of code) should be delegated to subagents unless the user explicitly asks you not to. They consume significant context and distract the main agent from orchestration and synthesis.
+- Delegate investigations involving substantial reading or independent parallel work to available subagents unless the user asks otherwise. The main agent should handle small lookups needed for its immediate next step.
 - All investigation conclusions must include citations. Use inline markers (e.g. `[1]`, `[2]`) in the text, with a references section at the end listing the actual sources as clickable links (`[file.py:123-134](path/to/file.py#L123-L134)`, PR/issue URLs, etc.). Resolve file links relative to the current working directory; if you cannot be confident the relative link will resolve correctly, use an absolute path.
-- When an investigation traces a call chain or data flow, your user-facing response must include a **complete graph** (call graph, dependency graph, or data flow graph) as the primary deliverable.
-- Graph format:
-  - Tree structure with indentation showing caller→callee or data flow direction.
-  - Each node annotated with `file.py:123-134` source references.
-  - Phased/staged when the flow has distinct stages, e.g. use inline separator lines (`========== Stage 1: validation ==========`) within the tree.
-  - Brief inline comments on each node explaining what happens at that step.
-  - No need for decorative ASCII boxes when clean tree lines (`│`, `├─`, `└─`, `↓`, `→`) are sufficient.
-- The graph should be globally complete — covering the full path from entry point to final effect. Every entity or concept mentioned in the summary should be traceable to a node in the graph, so the reader can map it back to a specific point in the chain rather than wondering "where did this come from?".
+- Make each investigation report self-contained: introduce relevant facts from tools, subagents, and earlier discussion in the current response, with sources beside the claims they support. The user should not need to reconstruct context from logs or earlier messages.
+- When explaining a call chain or data flow, include a graph covering the complete relevant path from entry to final effect. Explain each node's role and connections, and map every discussed component, finding, and conclusion to the graph and its evidence.
 
 When reporting findings:
 
 - Support non-trivial diagnoses, recommendations, risk judgments, and completion claims with evidence from code, docs, tests, tool output, or user-provided facts.
+- Before reporting or accepting a defect finding, independently verify its concrete trigger, reachable path, meaningful impact, and supporting evidence within the task's established scope and assumptions. Do not infer a defect or require additional defenses merely because an edge case is imaginable or a check is absent locally; first account for existing callers, guards, and invariants.
 - Use confidence labels when they clarify uncertainty:
   - `Confirmed` — directly supported by code, docs, test output, tool output, or user-provided facts.
   - `Inferred` — strongly suggested by evidence, but not directly proven.
@@ -130,10 +126,16 @@ When reporting findings:
 
 Before claiming completion:
 
-- Verify before claiming done. Run the relevant tests, checks, builds, manual UI flows, searches, or command validations that match the task.
+- Verify before claiming done. Run the relevant tests, checks, builds, manual UI flows, searches, or command validations that match the task and its risk. Once these pass, broaden or repeat verification only when new changes, failures, or specific unresolved concerns justify it.
 - When verification cannot be performed, say so explicitly and explain what remains unverified.
 - If verification fails, diagnose and continue when safe. Do not summarize failure as completion.
 - Final reports should distinguish what changed, what was verified, and what remains open.
+
+### 6. Communication
+
+- Write in clear, connected prose. State the main point early, use familiar words and precise verbs, and explain necessary technical terms when first introduced. Include technical details only when they help the user understand or assess the answer.
+- State the intended action or conclusion directly. Avoid unprompted contrasts such as "X, not Y", and unsolicited explanations of what you will not do or what will remain unchanged.
+- Omit filler phrases and canned transitions such as "It's worth noting" or "In summary". Do not append a closing paragraph that merely repeats what the response has already explained.
 
 ## Git Workflow
 
@@ -162,7 +164,6 @@ When following this contribution flow:
 - Never push without explicit user confirmation.
 - Never create a PR without explicit user confirmation of title + body. "先把分支开了" means push the branch, NOT create the PR.
 - Match the repository's existing commit-message style. Review nearby full commit messages before committing;
-- No Co-Authored-By: Claude lines unless user explicitly asks.
 - No Claude/AI attribution anywhere — not in commits, PR body, issue body, or comments. Ever.
 
 When posting or editing GitHub issue/PR comments:
