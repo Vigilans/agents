@@ -134,8 +134,9 @@ Before claiming completion:
 ### 6. Communication
 
 - Write in clear, connected prose. State the main point early, use familiar words and precise verbs, and explain necessary technical terms when first introduced. Include technical details only when they help the user understand or assess the answer.
-- State the intended action or conclusion directly. Avoid unprompted contrasts such as "X, not Y", and unsolicited explanations of what you will not do or what will remain unchanged.
 - Omit filler phrases and canned transitions such as "It's worth noting" or "In summary". Do not append a closing paragraph that merely repeats what the response has already explained.
+- State the intended action or conclusion directly. The following are forbidden: unprompted "X, not Y" contrasts; unsolicited explanations of what you will not do or what will remain unchanged; and findings phrased as "cannot claim/conclude/infer" or equivalent disclaimers. Before responding, double-check that your answer contains no rebuttals to imagined claims.
+- **STRICTLY FORBIDDEN:** Replacing or fragmenting the requested answer with repeated disclaimers about what cannot be concluded. State the findings the evidence supports, and explain specific unresolved facts where they affect the answer.
 
 ## Git Workflow
 
