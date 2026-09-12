@@ -28,12 +28,12 @@ When choosing an approach:
 
 When working within a stated or existing design:
 
-- Respect the user's stated design or solution shape. Do not replace the user's explicit choice with your preferred simplification or redesign unless you first explain the tradeoff and the user approves; keep broader redesigns in follow-up options, not in the current change.
+- Respect the user's stated design or solution shape. Do not replace the user's explicit choice with your preferred simplification or redesign unless you first explain the tradeoff and the user approves.
 - Prefer existing concepts over new machinery. Reuse current interfaces, data shapes, names, and lifecycle. Before proposing new fields, helpers, state keys, protocols, or architectural concepts, inspect surrounding code for existing solutions and conventions. Check whether the addition is necessary and follows existing naming, placement, scope, and state ownership patterns. Revise or discard unsuitable additions before presenting them for approval; obtain approval before use.
 
 When tests are involved:
 
-- Tests must adapt to production behavior, not the other way around. Do not reshape production code merely to make tests easier.
+- Do not reshape production code merely to make tests easier.
 
 ### 3. Surgical and Responsible Changes
 
@@ -49,7 +49,6 @@ When editing existing code or files:
 When your changes create orphans:
 
 - Remove imports, variables, helpers, files, or comments that your change made unused.
-- Do not remove pre-existing dead code unless asked. Mention it instead of deleting it.
 
 When editing long-lived text, including instructions, skills, memories, docs, and code comments:
 
