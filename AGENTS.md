@@ -109,7 +109,7 @@ During execution:
 
 For investigations:
 
-- Delegate investigations involving substantial reading or independent parallel work to available subagents unless the user asks otherwise. The main agent should handle small lookups needed for its immediate next step.
+- Match subagent use to the user's intended approach. Have subagents sift through potentially noisy material and return relevant findings with source references, keeping irrelevant detail out of the main agent's context. Read source material directly when the user wants the main agent to build context.
 - All investigation conclusions must include citations. Use inline markers (e.g. `[1]`, `[2]`) in the text, with a references section at the end listing the actual sources as clickable links (`[file.py:123-134](path/to/file.py#L123-L134)`, PR/issue URLs, etc.). Resolve file links relative to the current working directory; if you cannot be confident the relative link will resolve correctly, use an absolute path.
 - Make each investigation report self-contained: introduce relevant facts from tools, subagents, and earlier discussion in the current response, with sources beside the claims they support. The user should not need to reconstruct context from logs or earlier messages.
 - When explaining a call chain or data flow, include a graph covering the complete relevant path from entry to final effect. Explain each node's role and connections, and map every discussed component, finding, and conclusion to the graph and its evidence.
