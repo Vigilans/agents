@@ -9,11 +9,13 @@
 #   CLAUDE_CODE_SUBAGENT_<ALIAS>_MODEL
 #   - applies whenever the effective model matches <ALIAS>, whether the model
 #     was chosen explicitly or inherited
+#   - a model declared in the subagent's definition frontmatter counts as an
+#     explicit choice when the Agent call passes no model
 #
 #   CLAUDE_CODE_SUBAGENT_INHERIT_MODEL / CLAUDE_CODE_SUBAGENT_INHERIT_<ALIAS>_MODEL
 #   - same, but only when the call picks no model (unset, "inherit", or
-#     "default"); the effective model is the one that made the Agent call,
-#     read from the transcript
+#     "default") and the definition declares none; the effective model is the
+#     one that made the Agent call, read from the transcript
 #
 #   First match wins: <TYPE> > INHERIT_<ALIAS> > INHERIT > <ALIAS>
 #   - CLAUDE_CODE_SUBAGENT_MODEL remains Claude Code's native global override
@@ -79,6 +81,19 @@ agent_calling_model() {
     printf '%s' "$model" # Model of the LLM response that made this Agent call.
 }
 
+agent_definition_model() {
+    local subagent_type="$1" cwd="$2" dir file
+
+    # Same precedence as Claude Code: project agents shadow user agents.
+    # Built-in agents have no definition file and resolve as inherit.
+    for dir in "$cwd/.claude/agents" "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/agents"; do
+        file="$dir/$subagent_type.md"
+        [ -r "$file" ] || continue
+        sed -n '2,/^---$/{/^model:/{s/^model:[[:space:]]*//;s/[[:space:]]*$//;p;q}}' "$file"
+        return 0
+    done
+}
+
 model_id_to_alias() {
     local model="$1" key val base cfg
     [ -n "$model" ] && [ "$model" != "default" ] || return 0
@@ -123,6 +138,10 @@ PreToolUse)
 
     if [ -z "$MODEL" ]; then # CLAUDE_CODE_SUBAGENT_<ALIAS>_MODEL
         REQUESTED=$(jq -r '.tool_input.model // empty' <<<"$INPUT")
+        if [ -z "$REQUESTED" ]; then
+            REQUESTED=$(agent_definition_model "$SUBAGENT_TYPE" \
+                "$(jq -r '.cwd // empty' <<<"$INPUT")")
+        fi
         case "$REQUESTED" in
             ""|inherit|default)
                 # Inherit-like calls (unset, "inherit", "default") resolve through the inherited model's alias
