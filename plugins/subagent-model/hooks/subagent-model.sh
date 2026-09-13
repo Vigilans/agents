@@ -19,8 +19,9 @@
 #
 #   First match wins: <TYPE> > INHERIT_<ALIAS> > INHERIT > <ALIAS>
 #   - CLAUDE_CODE_SUBAGENT_MODEL remains Claude Code's native global override
-#   - custom model IDs are only injected when the active runtime does not
-#     contain Agent updatedInput schema validation
+#   - custom model IDs are only injected when the active runtime accepts
+#     them: ClawGod with its hook-update-agent-model feature enabled, or a
+#     native Claude that predates Agent updatedInput schema validation
 #
 # Permission mode override:
 #   CLAUDE_CODE_SUBAGENT_MODE=<mode>
@@ -39,11 +40,15 @@ POLICY="${CLAUDE_CODE_SUBAGENT_MODE:-}"
 supports_updated_input_without_schema_validation() {
     local runtime="" pid="$PPID" command status
 
-    # ClawGod runs patched source under Bun; native Claude runs the executable.
-    if [ -n "${CLAWGOD_DIR:-}" ] \
-        && [ -r "$CLAWGOD_DIR/cli.original.cjs" ]; then
-        runtime="$CLAWGOD_DIR/cli.original.cjs"
-    elif [ -d /proc ]; then
+    # ClawGod bakes a runtime gate around the Agent updatedInput validation;
+    # feature-gates.cjs computes the gate's state the same way at launch.
+    if [ -n "${CLAWGOD_DIR:-}" ] && [ -r "$CLAWGOD_DIR/feature-gates.cjs" ]; then
+        [ "$(bun "$CLAWGOD_DIR/feature-gates.cjs" --enabled hook-update-agent-model 2>/dev/null)" = 1 ]
+        return
+    fi
+
+    # Native Claude validates hook-updated Agent input since 2.1.157.
+    if [ -d /proc ]; then
         while [ "$pid" -gt 1 ]; do
             command=$(ps -o comm= -p "$pid" 2>/dev/null || true)
             if [ "$command" = claude ]; then
@@ -57,7 +62,6 @@ supports_updated_input_without_schema_validation() {
         runtime="$CLAUDE_CODE_EXECPATH"
     fi
 
-    # The ClawGod patch removes the strict-validation block containing this text.
     [ -r "$runtime" ] || return 1
     grep -aFq 'returned updatedInput that failed schema validation' \
         "$runtime" 2>/dev/null || status=$?
