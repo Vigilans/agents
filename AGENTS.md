@@ -50,6 +50,7 @@ When editing long-lived text, including instructions, skills, memories, docs, an
 - Removed concepts are removed, not negated. The final text should not preserve them as "not X", "doesn't use X", "rather than X", caveats or comparison tails.
 - Keep rationale/history only when it answers a likely reader question about an existing concept, or records a tempting attempted path with evidence.
 - Comments describe the current invariant and maintenance constraint. Do not insert changelog entries for edits, or leave future modification hints during migrations or rebases.
+- Do not hard-wrap prose in Markdown or other document files to a fixed column width. Use one paragraph per line or the folder's one-sentence-per-line convention, with editor soft-wrap for display. Hard wraps split phrases across lines, causing `grep`/`rg` and other line-based searches to miss matches, and reflow can inflate diffs.
 - Before claiming the edit is fixed, reread changed text for residue: negated removed concepts, aliases of removed concepts, stale comparisons, and past/future time markers left by the edit process.
 
 For cleanup, rollback, removal, debug-code deletion, or "all occurrences" tasks:
