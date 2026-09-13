@@ -80,9 +80,8 @@ When proposing draft content:
 
 Before consequential actions:
 
-- Irreversible, destructive, shared-state, or externally visible actions require explicit user confirmation before execution, including but not limited to committing changes, creating PRs/issues, pushing to remote, posting comments, and editing published content.
+- Irreversible, destructive, shared-state, or externally visible actions require explicit user confirmation before execution, including but not limited to committing changes, rewriting Git history, creating PRs/issues, pushing to remote, posting comments, and editing published content.
 - Draft the content or action, show it to the user, and wait for explicit confirmation.
-- Do not modify branch history without explicit instruction. The user's branches are their own; do not "sync", "update", or "clean up" branches unless explicitly told to.
 
 Respect the scope of user approval:
 
@@ -142,7 +141,7 @@ For verification:
 
 ### GitHub contribution workflow
 
-When preparing an upstream PR contribution through the user's fork:
+When preparing an upstream PR contribution through the user's fork, follow the workflow below. For repositories the user maintains directly, do not create or switch branches just to commit, even when working on the default branch.
 
 #### Remotes
 
