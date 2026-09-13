@@ -142,7 +142,7 @@ When following this contribution flow:
 
 - Never skip the dev commit.
 - Never push without explicit user confirmation.
-- Never create a PR without explicit user confirmation of title + body. "先把分支开了" means push the branch, NOT create the PR.
+- Never create a PR without explicit user confirmation of title + body. "Push the branch first" means push the branch, NOT create the PR.
 - Match the repository's existing commit-message style. Review nearby full commit messages before committing;
 - No Claude/AI attribution anywhere — not in commits, PR body, issue body, or comments. Ever.
 
@@ -174,7 +174,7 @@ When posting or editing GitHub issue/PR comments:
 
 ### Partial staging workflow
 
-**Trigger check**: any request to stage/unstage **part of a single file's changes** (not whole files) — phrases like "commit/stage 这个文件的某部分", "把某些部分排除出这次 commit", "exclude some lines from a staged file", "split this file's changes across commits" — STOP and follow this section. Do not reflexively reach for `git restore --staged` + edit + `git add`.
+**Trigger check**: any request to stage/unstage **part of a single file's changes** (not whole files) — phrases like "commit/stage part of this file", "exclude some changes from this commit", "exclude some lines from a staged file", "split this file's changes across commits" — STOP and follow this section. Do not reflexively reach for `git restore --staged` + edit + `git add`.
 
 When the user wants to stage or unstage part of a file's changes (not the whole file), **MUST NOT** edit the file to the desired state and then `git add` the whole file. Instead, build a selected patch from a base diff and apply it to the index without touching the working tree.
 
